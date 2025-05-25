@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TouristVibes</string>
+    <string name="select_country_code">Select Country Code</string>
+    <string name="search_text">Search country code</string>
+</resources>

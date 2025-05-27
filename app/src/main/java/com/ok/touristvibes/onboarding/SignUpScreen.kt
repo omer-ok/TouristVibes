@@ -30,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,8 +61,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.ok.touristvibes.R
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
-import androidx.compose.material3.TextFieldColors
 import com.ok.touristvibes.navigation.onBoardingNavigation.TouristVibeOnBoardingScreens
+import com.ok.touristvibes.navigation.utilz.LabelView
 
 
 @Composable
@@ -145,18 +146,18 @@ fun TopSignUpHeading(){
                     color = colorResource(R.color.login_heading),
                     )
             )
-            Divider(
-                color = colorResource(R.color.divider),
+            HorizontalDivider(
                 modifier = Modifier
                     .width(80.dp)
                     .height(1.dp)
                     .align(Alignment.CenterVertically),
+                color = colorResource(R.color.divider)
             )
         }
     }
 }
 
-@Composable
+/*@Composable
 fun LabelView(label :String){
     Row(modifier = Modifier
         .wrapContentHeight()
@@ -172,7 +173,7 @@ fun LabelView(label :String){
             )
         )
     }
-}
+}*/
 @Composable
 fun TextInputField(hint  :String){
     Card(
@@ -366,7 +367,7 @@ fun RadioButtons() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun EatExpressSignUpScreenPreview() {
+fun TouristVibesSignUpScreenPreview() {
     TouristVibesTheme {
         SignUpMainScreen(null)
     }

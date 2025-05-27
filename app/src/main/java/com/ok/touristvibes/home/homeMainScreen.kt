@@ -68,15 +68,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.fooddelivery.eatexpress.models.TourData
-import com.fooddelivery.eatexpress.models.getTourData
+
 import com.ok.touristvibes.R
+import com.ok.touristvibes.models.TourData
+import com.ok.touristvibes.models.getTourData
 import com.ok.touristvibes.navigation.homeMainNavigation.HomeMainAppScreens
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun EatExpressHomeMainPreview() {
+fun TouristVibesHomeMainPreview() {
     TouristVibesTheme {
         HomeMainApp(null)
     }
@@ -87,6 +88,8 @@ fun HomeScreenOnBack (onExitApp: () -> Unit) {
         onExitApp()
     }
 }
+
+
 @Composable
 fun HomeMainApp(navController: NavController?){
     Column(modifier = Modifier
@@ -101,7 +104,7 @@ fun HomeMainApp(navController: NavController?){
                     color = colorResource(R.color.white)
                 ) {
                     MainFoodList(navController)
-                    FloatingActionButtons()
+                    FloatingActionButtons(navController)
                 }
             }
         )
@@ -201,16 +204,6 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
                                 color = colorResource(R.color.black),
                             )
                         )
-                        /*Text(modifier = Modifier,
-                            text = tourData.restaurantName,
-                            style = TextStyle(
-                                fontSize = 14.sp,
-                                lineHeight = 20.sp,
-                                fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
-                                fontWeight = FontWeight.SemiBold,
-                                color = colorResource(R.color.login_heading),
-                            )
-                        )*/
                     }
 
                     //AddToCartButton(null)
@@ -294,13 +287,6 @@ fun AddToCartButton(navController: NavController?){
     }
 }
 
-/*fun add(formula: String){
-   val temp =  formula.split("+")
-    for (temp){
-
-    }
-
-}*/
 private fun mToast(context: Context){
     Toast.makeText(context, "Order Added to cart", Toast.LENGTH_LONG).show()
 }
@@ -385,34 +371,6 @@ fun AddAppBar() {
                 )
             }
         },
-       /* navigationIcon = {
-            IconButton({}) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "menu items"
-                )
-            }
-        },*/
-        /*actions = {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Filled.Videocam,
-                    contentDescription = "video call",
-                )
-            }
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Filled.Call,
-                    contentDescription = "phone call",
-                )
-            }
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = "more options",
-                )
-            }
-        },*/
         colors = TopAppBarDefaults.topAppBarColors(colorResource(R.color.app_bar_color)),
     )
 }
@@ -421,7 +379,7 @@ fun AddAppBar() {
 
 
 @Composable
-fun FloatingActionButtons() {
+fun FloatingActionButtons(navController: NavController?) {
     val context = LocalContext.current
     Column(
         modifier = Modifier
@@ -429,17 +387,10 @@ fun FloatingActionButtons() {
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.End
     ) {
-       /* Text(
-            text = "Floating Action Buttons in Android\nJetpack Compose",
-            color = colorResource(R.color.button_color),
-            fontFamily = FontFamily.Default,
-            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(20.dp))*/
-
-        // a simple floating action button
         FloatingActionButton(
             onClick = {
+                navController?.navigate(route = HomeMainAppScreens.AddProductScreen.name)
+
                 Toast.makeText(context, "Simple Floating Action Button",
                     Toast.LENGTH_SHORT).show()
             },
@@ -449,32 +400,5 @@ fun FloatingActionButtons() {
             // adding icon for button.
             Icon(Icons.Filled.Add, "")
         }
-   /*     Spacer(modifier = Modifier.height(20.dp))
-
-        // a square floating action button
-        FloatingActionButton(
-            onClick = {
-                Toast.makeText(context, "Square Floating Action Button",
-                    Toast.LENGTH_SHORT).show()
-            },
-            shape = RectangleShape,
-            containerColor = colorResource(R.color.button_color),
-            contentColor = Color.White
-        ) {
-            Icon(Icons.Filled.Add, "")
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // an extended floating action button.
-        ExtendedFloatingActionButton(
-            text = { Text(text = "Extended FAB") },
-            onClick = {
-                Toast.makeText(context, "Extended Floating Action Button",
-                    Toast.LENGTH_SHORT).show()
-            },
-            containerColor = colorResource(R.color.button_color),
-            contentColor = Color.White,
-            icon = { Icon(Icons.Filled.Add, "") }
-        )*/
     }
 }

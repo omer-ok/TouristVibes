@@ -43,9 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.fooddelivery.eatexpress.models.TourData
-import com.fooddelivery.eatexpress.models.getTourDetails
 import com.ok.touristvibes.R
+import com.ok.touristvibes.models.TourData
+import com.ok.touristvibes.models.getTourDetails
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
 
 @Preview(showBackground = true, showSystemUi = true)

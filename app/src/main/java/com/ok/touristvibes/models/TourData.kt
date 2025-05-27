@@ -1,4 +1,4 @@
-package com.fooddelivery.eatexpress.models
+package com.ok.touristvibes.models
 
 import java.time.Instant
 import java.util.Date

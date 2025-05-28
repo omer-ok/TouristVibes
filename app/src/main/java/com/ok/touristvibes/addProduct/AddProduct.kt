@@ -76,6 +76,7 @@ import com.ok.touristvibes.R
 import com.ok.touristvibes.home.StarRatingBar
 import com.ok.touristvibes.home.homeViewModel.CameraPreviewViewModel
 import com.ok.touristvibes.models.TourData
+import com.ok.touristvibes.navigation.homeMainNavigation.HomeMainAppScreens
 import com.ok.touristvibes.navigation.onBoardingNavigation.TouristVibeOnBoardingScreens
 import com.ok.touristvibes.navigation.utilz.LabelView
 import com.ok.touristvibes.onboarding.DropDownField
@@ -122,7 +123,7 @@ fun AddProduct(navController: NavController?){
                /* TopSignUpHeading()
                 LabelView("Your Full Name")*/
 
-                AddImage()
+                AddImage(navController)
 
               /*  LabelView("Your Email Address ")
                 TextInputField("Ali@gmail.com")
@@ -147,20 +148,18 @@ fun AddProduct(navController: NavController?){
 }
 
 @Composable
-fun AddImage(modifier: Modifier = Modifier){
+fun AddImage(navController: NavController?){
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(0.dp, 16.dp, 0.dp, 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        val viewModel = remember { CameraPreviewViewModel() }
-        CameraPreviewScreen(viewModel)
         Card(
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight(),
             onClick = {
                // CameraPreviewContent(viewModel,modifier)
-
+                navController?.navigate(route = HomeMainAppScreens.CameraXScreen.name)
             },
             border = BorderStroke(1.dp, colorResource(R.color.white)),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -185,7 +184,7 @@ fun AddImage(modifier: Modifier = Modifier){
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                LabelImageView("Add Image")
+                LabelImageView("Share your Vibe")
             }
         }
     }
@@ -197,7 +196,7 @@ fun AddImage(modifier: Modifier = Modifier){
 @Composable
 fun LabelImageView(label :String){
     Row(modifier = Modifier
-        .padding(22.dp, 0.dp, 0.dp, 0.dp),
+        .padding(8.dp, 0.dp, 8.dp, 8.dp),
 
         horizontalArrangement = Arrangement.Center) {
         Text(modifier = Modifier,
@@ -292,57 +291,3 @@ fun AddProductButton(navController: NavController?){
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun CameraPreviewScreen(viewModel: CameraPreviewViewModel,
-                        modifier: Modifier = Modifier) {
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-    if (cameraPermissionState.status.isGranted) {
-
-        CameraPreviewContent(viewModel,modifier)
-    } else {
-        Column(
-            modifier = modifier.fillMaxSize().wrapContentSize().widthIn(max = 180.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            val textToShow = if (cameraPermissionState.status.shouldShowRationale) {
-                // If the user has denied the permission but the rationale can be shown,
-                // then gently explain why the app requires this permission
-                "Whoops! Looks like we need your camera to work our magic!" +
-                        "Don't worry, we just wanna see your pretty face (and maybe some cats).  " +
-                        "Grant us permission and let's get this party started!"
-            } else {
-                // If it's the first time the user lands on this feature, or the user
-                // doesn't want to be asked again for this permission, explain that the
-                // permission is required
-                "Hi there! We need your camera to work our magic! ✨\n" +
-                        "Grant us permission and let's get this party started! \uD83C\uDF89"
-            }
-            Text(textToShow, textAlign = TextAlign.Center)
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                Text("Unleash the Camera!")
-            }
-        }
-    }
-}
-
-@Composable
-fun CameraPreviewContent(
-    viewModel: CameraPreviewViewModel,
-    modifier: Modifier = Modifier,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-) {
-    val surfaceRequest by viewModel.surfaceRequest.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    LaunchedEffect(lifecycleOwner) {
-        viewModel.bindToCamera(context.applicationContext, lifecycleOwner)
-    }
-
-    surfaceRequest?.let { request ->
-        CameraXViewfinder(
-            surfaceRequest = request,
-            modifier = modifier
-        )
-    }
-}

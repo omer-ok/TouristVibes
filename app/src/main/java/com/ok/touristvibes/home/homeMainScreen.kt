@@ -390,9 +390,6 @@ fun FloatingActionButtons(navController: NavController?) {
         FloatingActionButton(
             onClick = {
                 navController?.navigate(route = HomeMainAppScreens.AddProductScreen.name)
-
-                Toast.makeText(context, "Simple Floating Action Button",
-                    Toast.LENGTH_SHORT).show()
             },
             containerColor = colorResource(R.color.button_color),
             contentColor = Color.White

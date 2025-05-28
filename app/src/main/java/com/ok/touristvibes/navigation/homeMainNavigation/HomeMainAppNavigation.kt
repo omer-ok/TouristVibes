@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ok.touristvibes.addProduct.AddProduct
+import com.ok.touristvibes.cameraXScreen.CameraXScreen
 import com.ok.touristvibes.home.HomeMainApp
 import com.ok.touristvibes.home.ProductDetailScreen
 
@@ -53,6 +54,22 @@ fun HomeMainAppNavigation() {
                 )
             }){
                 backStackEntry -> backStackEntry.arguments?.let { AddProduct(navController = navController) }
+        }
+
+        composable(
+            HomeMainAppScreens.CameraXScreen.name,  enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
+            }){
+                backStackEntry -> backStackEntry.arguments?.let { CameraXScreen(navController = navController) }
         }
     }
 }

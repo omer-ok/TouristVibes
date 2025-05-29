@@ -16,7 +16,7 @@ fun countryList(context: Context): MutableList<Country> {
     val jsonAdapter: JsonAdapter<MutableList<Country>> = moshi.adapter(personListType)
 
     val jsonFileString = getJsonDataFromAsset(context, "Countries.json")
-    return jsonAdapter.fromJson(jsonFileString) ?: mutableListOf()
+    return jsonFileString?.let { jsonAdapter.fromJson(it) } ?: mutableListOf()
 }
 
 fun localeToEmoji(countryCode: String): String {

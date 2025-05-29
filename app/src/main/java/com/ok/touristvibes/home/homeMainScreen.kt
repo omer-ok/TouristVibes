@@ -5,9 +5,14 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,13 +25,17 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -42,6 +51,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -52,6 +63,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -63,16 +79,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
 import com.ok.touristvibes.R
 import com.ok.touristvibes.models.TourData
 import com.ok.touristvibes.models.getTourData
 import com.ok.touristvibes.navigation.homeMainNavigation.HomeMainAppScreens
+import com.ok.touristvibes.navigation.utilz.ImageCarousel
+import com.ok.touristvibes.navigation.utilz.ImageProductPager
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -103,7 +120,27 @@ fun HomeMainApp(navController: NavController?){
                         .fillMaxHeight(),
                     color = colorResource(R.color.white)
                 ) {
-                    MainFoodList(navController)
+                    Column(modifier = Modifier) {
+                        SearchBar("Search vibes accross london")
+                        Box(modifier = Modifier.height(20.dp)) {  }
+                        Column(modifier = Modifier
+                            .padding(16.dp, 0.dp, 16.dp, 16.dp),) {
+                            ImageProductPager()
+                        }
+                        Text(modifier = Modifier
+                            .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                            .align(Alignment.Start),
+                            text = "Attractive Vibes",
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                lineHeight = 27.sp,
+                                fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
+                                fontWeight = FontWeight(600),
+                                color = colorResource(R.color.black),
+                            )
+                        )
+                        MainFoodList(navController)
+                    }
                     FloatingActionButtons(navController)
                 }
             }
@@ -114,7 +151,8 @@ fun HomeMainApp(navController: NavController?){
 @Composable
 fun MainFoodList(navController: NavController?,foodList: List<TourData> = getTourData()){
    Column(modifier = Modifier.padding(12.dp)) {
-       LazyColumn{
+       LazyColumn(modifier = Modifier
+           .wrapContentSize()){
            items(items = foodList){ foodList ->
                MovieRow(foodList,navController){ selectedFoodItem ->
                    Log.d("SelectedFoodItem",selectedFoodItem.name)
@@ -345,6 +383,76 @@ fun CircleImageView() {
     )
 }*/
 
+@Composable
+fun SearchBar(hint  :String){
+    Card(
+        modifier = Modifier
+            .wrapContentWidth()
+            .requiredHeight(48.dp)
+            .padding(16.dp, 0.dp, 16.dp, 0.dp),
+        border = BorderStroke(1.dp, colorResource(R.color.divider)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Row(modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.white)),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Top) {
+            var value by remember { mutableStateOf("") }
+            Row{
+                TextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
+                        cursorColor = colorResource(R.color.black),
+                        disabledTextColor =  Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    placeholder = {
+                        Text(hint,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                lineHeight = 20.sp,
+                                fontFamily = FontFamily(Font(R.font.lexend_deca_light)),
+                                fontWeight = FontWeight(300),
+                                color = colorResource(R.color.hint_txt_color),
+
+                                ))
+                    },
+                    maxLines = 2,
+                    textStyle = TextStyle(fontSize = 12.sp,
+                        lineHeight = 20.sp,
+                        fontFamily = FontFamily(Font(R.font.lexend_deca_regular)),
+                        fontWeight = FontWeight(400),
+                        color = colorResource(R.color.black),),
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .padding(end = 40.dp)
+                        .background(colorResource(R.color.white))
+
+
+                )
+                Image(
+                    painter = painterResource(R.drawable.ic_search),
+                    contentDescription = "Circle Image",
+                    //contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .background(colorResource(R.color.white))
+                        .align(Alignment.CenterVertically)
+                        .size(17.dp)
+                        .clip(CircleShape) // clip to the circle shap
+
+                )
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAppBar() {
@@ -355,20 +463,35 @@ fun AddAppBar() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 30.dp),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Start
             ){
-                Text(modifier = Modifier
-                    .wrapContentWidth(),
-                    text = "The Tourist Vibe",
-                    style = TextStyle(
-                        fontSize = 40.sp,
-                        lineHeight = 1000.sp,
-                        textDecoration = TextDecoration.Underline,
-                        fontFamily = FontFamily(Font(R.font.great_vibes_regular)),
-                        fontWeight = FontWeight.ExtraBold,
-                        color = colorResource(R.color.login_heading),
+                CircleImageView()
+                Column(modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(10.dp)) {
+                    Text(modifier = Modifier
+                        .align(Alignment.Start),
+                        text = "Hello, Omer",
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            lineHeight = 27.sp,
+                            fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
+                            fontWeight = FontWeight(600),
+                            color = colorResource(R.color.black),
+                        )
                     )
-                )
+                    Text(modifier = Modifier
+                        .align(Alignment.Start),
+                        text = "Find a Place to Vibe in London",
+                        style = TextStyle(
+                            fontSize =10.sp,
+                            lineHeight = 27.sp,
+                            fontFamily = FontFamily(Font(R.font.lexend_deca_light)),
+                            fontWeight = FontWeight(100),
+                            color = colorResource(R.color.black),
+                        )
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(colorResource(R.color.app_bar_color)),
@@ -376,7 +499,18 @@ fun AddAppBar() {
 }
 
 
-
+@Composable
+fun CircleImageView() {
+    Image(
+        painter = painterResource(R.drawable.profile_avatar),
+        contentDescription = "Circle Image",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape) // clip to the circle shape
+            .border(1.dp, Color.Gray, CircleShape)//optional
+    )
+}
 
 @Composable
 fun FloatingActionButtons(navController: NavController?) {

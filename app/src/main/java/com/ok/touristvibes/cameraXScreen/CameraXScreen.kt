@@ -1,11 +1,6 @@
 package com.ok.touristvibes.cameraXScreen
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,11 +12,9 @@ import androidx.navigation.NavController
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
 import com.ujizin.camposer.CameraPreview
 import com.ujizin.camposer.state.CamSelector
-import com.ujizin.camposer.state.ImageCaptureResult
 import com.ujizin.camposer.state.ImplementationMode
 import com.ujizin.camposer.state.rememberCamSelector
 import com.ujizin.camposer.state.rememberCameraState
-import java.io.File
 
 
 @Preview(showBackground = true, showSystemUi = true)

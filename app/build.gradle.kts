@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -66,6 +68,23 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.accompanist.permissions)
+
+    // Hilt
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.android.compiler)
+    ksp(libs.dagger.hilt.compiler)
+
+    // Room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    // ViewModel
+    implementation(libs.compose.lifecycle.viewmodel)
+    implementation(libs.compose.lifecycle.runtime)
+
+    //implementation (libs.accompanist.pager)
+
 
 
     testImplementation(libs.junit)

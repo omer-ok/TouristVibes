@@ -1,8 +1,8 @@
-package com.ok.touristvibes.profile
+/*
+package com.ok.touristvibes.home
 
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.compose.BackHandler
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -65,38 +65,30 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.navigation.NavController
-import coil3.compose.AsyncImage
 import com.ok.touristvibes.R
+import coil3.compose.AsyncImage
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
 import kotlinx.coroutines.launch
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun TouristVibesProfileScreenPreview() {
+fun CollapsingAppBarDemonPreview() {
     TouristVibesTheme {
-        ProfileScreenMain(null)
-    }
-}
-@Composable
-fun ProfileScreenMainOnBack (onExitApp: () -> Unit) {
-    BackHandler(enabled = true) {
-        onExitApp()
+        CollapsingAppBarDemo()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreenMain(navController: NavController?, modifier: Modifier = Modifier) {
+fun CollapsingAppBarDemo(modifier: Modifier = Modifier) {
     val items = listOf(
         "https://images.unsplash.com/photo-1568565110033-4eab8bcdd72c?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         "https://images.unsplash.com/photo-1556695736-d287caebc48e?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -166,9 +158,9 @@ fun ProfileScreenMain(navController: NavController?, modifier: Modifier = Modifi
                     .zIndex(0f)
                     .fillMaxWidth()
                     // the app bar background color
-                    .background(colorResource(R.color.main_blue_color))
+                    .background(MaterialTheme.colorScheme.tertiary)
             ) {
-                CollapsedAppBar(navController,visible = !appBarExpanded)
+                CollapsedAppBar(visible = !appBarExpanded)
                 TopAppBar(
                     title = {
                         AppBarHeader(
@@ -204,7 +196,7 @@ fun ProfileScreenMain(navController: NavController?, modifier: Modifier = Modifi
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
-                    .background(colorResource(R.color.main_blue_color))
+                    .background(MaterialTheme.colorScheme.tertiary)
             )
             Column(
                 modifier = Modifier
@@ -256,7 +248,6 @@ fun ProfileScreenMain(navController: NavController?, modifier: Modifier = Modifi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollapsedAppBar(
-    navController: NavController?,
     modifier: Modifier = Modifier,
     visible: Boolean
 ) {
@@ -264,7 +255,7 @@ fun CollapsedAppBar(
         modifier = modifier,
         navigationIcon = {
             // back icon on the collapsed app bar
-            IconButton(onClick = {  navController?.popBackStack()}) {
+            IconButton(onClick = {}) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = null
@@ -296,7 +287,7 @@ fun CollapsedAppBar(
                         contentDescription = null
                     )
                     Text(
-                        text = "M.Omer Khan",
+                        text = "John Doe",
                         color = MaterialTheme.colorScheme.onTertiary,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
@@ -310,7 +301,7 @@ fun CollapsedAppBar(
             // set background color for collapsed state to transparent
             scrolledContainerColor = Color.Transparent,
             // set navigation icon color
-            navigationIconContentColor = colorResource(R.color.box_bg)
+            navigationIconContentColor = MaterialTheme.colorScheme.onTertiary
         )
     )
 }
@@ -352,20 +343,20 @@ fun AppBarHeader(
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
-                        text = "M.Omer Khan",
+                        text = "John Doe",
                         color = MaterialTheme.colorScheme.onTertiary,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "@O.K",
+                        text = "@johndoe",
                         color = MaterialTheme.colorScheme.onTertiary,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
             Text(
-                text = stringResource(R.string.my_intro),
+                text = "",
                 color = MaterialTheme.colorScheme.onTertiary,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center
@@ -435,7 +426,7 @@ fun PhotoGridHeader(
                     .align(Alignment.TopCenter)
                     .size(width = 36.dp, height = 5.dp)
                     .background(
-                        color = colorResource(R.color.main_blue_color),
+                        color = MaterialTheme.colorScheme.outlineVariant,
                         shape = CircleShape
                     )
             )
@@ -447,7 +438,7 @@ fun PhotoGridHeader(
             Text(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(colorResource(R.color.main_blue_color))
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 text = "Photos",
                 style = MaterialTheme.typography.bodyMedium,
@@ -492,4 +483,4 @@ fun PhotoGrid(
             )
         }
     }
-}
+}*/

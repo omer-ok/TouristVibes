@@ -12,6 +12,7 @@ import com.ok.touristvibes.addProduct.AddProduct
 import com.ok.touristvibes.cameraXScreen.CameraXScreen
 import com.ok.touristvibes.home.HomeMainApp
 import com.ok.touristvibes.home.ProductDetailScreen
+import com.ok.touristvibes.profile.ProfileScreenMain
 
 @Composable
 fun HomeMainAppNavigation() {
@@ -70,6 +71,22 @@ fun HomeMainAppNavigation() {
                 )
             }){
                 backStackEntry -> backStackEntry.arguments?.let { CameraXScreen(navController = navController) }
+        }
+
+        composable(
+            HomeMainAppScreens.ProfileMainScreen.name,  enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(500)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(500)
+                )
+            }){
+                backStackEntry -> backStackEntry.arguments?.let { ProfileScreenMain(navController = navController) }
         }
     }
 }

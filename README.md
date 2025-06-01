@@ -1,4 +1,4 @@
-**TouristVibe - Android App**
+#TouristVibe - Android App
 
 **Overview**
 

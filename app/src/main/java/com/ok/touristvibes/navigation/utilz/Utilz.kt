@@ -30,6 +30,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +58,8 @@ import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 
 import com.ok.touristvibes.R
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 import kotlin.math.absoluteValue
 
 @Composable
@@ -77,6 +81,7 @@ fun LabelView(label :String){
 }
 
 //@OptIn(ExperimentalPagerApi::class)
+@OptIn(FlowPreview::class)
 @Composable
 fun ImageProductPager() {
     val imageList = listOf(
@@ -94,6 +99,25 @@ fun ImageProductPager() {
 
     val items = imageList
     val pagerState = rememberPagerState { imageList.size }
+
+   /* val multiplier = 4
+    val pageCount = multiplier * items.size
+    val initialPage = pageCount / 2
+
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { pageCount }
+    )*/
+
+// We want to automatically scroll every 3 seconds the pager isn't scrolled (user scrolling or automatically scrolling.).
+    LaunchedEffect(Unit) {
+        snapshotFlow { pagerState.currentPage }
+            .debounce(3000) // delay until next automatic scrolling
+            .collect { page ->
+                pagerState
+                    .animateScrollToPage(page + 1)
+            }
+    }
 
     HorizontalPager(
         state = pagerState
@@ -113,7 +137,7 @@ fun ImageProductPager() {
             contentDescription = " ",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.height(200.dp)
-                .padding(end = 10.dp)
+                .padding(end = 10.dp),
         )
     }
     Spacer(modifier = Modifier.size(10.dp))

@@ -15,6 +15,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -66,11 +68,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -78,6 +82,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -88,6 +95,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -97,7 +105,9 @@ import com.ok.touristvibes.models.TourData
 import com.ok.touristvibes.models.getTourData
 import com.ok.touristvibes.navigation.homeMainNavigation.HomeMainAppScreens
 import com.ok.touristvibes.navigation.utilz.ImageProductPager
+import com.ok.touristvibes.profile.PhotoGrid
 import com.ok.touristvibes.ui.theme.TouristVibesTheme
+import kotlinx.coroutines.launch
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
@@ -137,7 +147,7 @@ fun HomeMainApp(navController: NavController?, modifier: Modifier = Modifier) {
         )
     }
 
-    val expandedAppBarHeight = 350.dp
+    val expandedAppBarHeight = 370.dp
     // header translation should be half of expandedAppBarHeight
     val headerTranslation = (expandedAppBarHeight / 2)
 
@@ -170,6 +180,7 @@ fun HomeMainApp(navController: NavController?, modifier: Modifier = Modifier) {
                                 translationY =
                                     scrollState.collapsedFraction * headerTranslation.toPx()
                             },
+                            navController,
                             visible = appBarExpanded
                         )
                     },
@@ -189,7 +200,7 @@ fun HomeMainApp(navController: NavController?, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .zIndex(1f)
-                .fillMaxSize()
+                .wrapContentSize()
                 .padding(innerPadding)
         ) {
             Box(
@@ -198,6 +209,8 @@ fun HomeMainApp(navController: NavController?, modifier: Modifier = Modifier) {
                     .height(24.dp)
                     .background(colorResource(R.color.white))
             )
+            val coroutineScope = rememberCoroutineScope()
+            val dragState = remember { mutableFloatStateOf(0f) }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -235,20 +248,125 @@ fun HomeMainApp(navController: NavController?, modifier: Modifier = Modifier) {
                         )
                     )
             ) {
-                Text(modifier = Modifier
-                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
-                    .align(Alignment.Start),
-                    text = "Attractive Vibes",
-                    style = TextStyle(
-                        fontSize = 15.sp,
-                        lineHeight = 27.sp,
-                        fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
-                        fontWeight = FontWeight(600),
-                        color = colorResource(R.color.black),
-                    )
+                CardListHeader(scrollBehavior = scrollBehavior)
+                MainFoodList(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),navController)
+              /*  val items = listOf(
+                    "https://images.unsplash.com/photo-1568565110033-4eab8bcdd72c?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1556695736-d287caebc48e?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1425913397330-cf8af2ff40a1?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?q=80&w=1920&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1564501911891-74a27d949ee1?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1523590564318-491748f70ea7?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1526481280693-3bfa7568e0f3?q=80&w=2971&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1533050487297-09b450131914?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1458869612855-bb6009d50368?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1509099395498-a26c959ba0b7?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1455577380025-4321f1e1dca7?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1593132808462-578ca7a387d9?q=80&w=3174&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1570129477492-45c003edd2be?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?q=80&w=3110&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=2881&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://plus.unsplash.com/premium_photo-1676968002767-1f6a09891350?q=80&w=3087&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://plus.unsplash.com/premium_photo-1661595245288-65d1430d0d13?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://plus.unsplash.com/premium_photo-1682116752956-c880046f5361?q=80&w=3099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://plus.unsplash.com/premium_photo-1686782502531-feb0e6a56eb5?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "https://plus.unsplash.com/premium_photo-1664358190450-2d84d93b9546?q=80&w=2970&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 )
-                MainFoodList(null)
+                PhotoGrid(
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    items = items,
+                )*/
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CardListHeader(
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val dragState = remember { mutableFloatStateOf(0f) }
+
+    Column(
+        modifier = modifier
+            // detect user drag gesture so user able to scroll the content
+            // by dragging the header on top of the content
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragEnd = {
+                        coroutineScope.launch {
+                            // dragState.floatValue * 2 = scroll snap speed
+                            val velocity = Velocity(0f, dragState.floatValue * 2)
+                            scrollBehavior.nestedScrollConnection.onPostFling(
+                                Velocity.Zero,
+                                velocity
+                            )
+                        }
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        dragState.floatValue = dragAmount.y
+
+                        // dragAmount.y * 0.6f = adjust the scroll speed
+                        // to match with the LazyVerticalGrid scroll speed
+                        // change the 0.6f multiplier if needed
+                        val scrollDelta = Offset(0f, dragAmount.y * 0.6f)
+
+                        val preConsumed = scrollBehavior.nestedScrollConnection.onPreScroll(
+                            scrollDelta,
+                            NestedScrollSource.UserInput
+                        )
+                        val remaining = scrollDelta - preConsumed
+                        scrollBehavior.nestedScrollConnection.onPostScroll(
+                            consumed = preConsumed,
+                            available = remaining,
+                            NestedScrollSource.UserInput
+                        )
+                    }
+                )
+            }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp)
+                .padding(top = 12.dp)
+        ) {
+            // drag handle indicator
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .size(width = 36.dp, height = 5.dp)
+                    .background(
+                        color = colorResource(R.color.main_blue_color),
+                        shape = CircleShape
+                    )
+            )
+        }
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Text(modifier = Modifier
+                .align(Alignment.Top),
+                text = "Attractive Vibes",
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    lineHeight = 27.sp,
+                    fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
+                    fontWeight = FontWeight(600),
+                    color = colorResource(R.color.black),
+                )
+            )
         }
     }
 }
@@ -279,7 +397,7 @@ fun CollapsedAppBar(
                             .fillMaxWidth()
                             .padding(end = 30.dp)
                             .clickable (onClick = {
-                                //navController?.navigate(route = HomeMainAppScreens.ProfileMainScreen.name)
+                                navController?.navigate(route = HomeMainAppScreens.ProfileMainScreen.name)
 
                             }),
                         horizontalArrangement = Arrangement.Start
@@ -292,7 +410,7 @@ fun CollapsedAppBar(
                                 .align(Alignment.Start),
                                 text = "Hello, Omer",
                                 style = TextStyle(
-                                    fontSize = 13.sp,
+                                    fontSize = 15.sp,
                                     lineHeight = 27.sp,
                                     fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
                                     fontWeight = FontWeight(600),
@@ -303,7 +421,7 @@ fun CollapsedAppBar(
                                 .align(Alignment.Start),
                                 text = "Find a Place to Vibe in London",
                                 style = TextStyle(
-                                    fontSize =10.sp,
+                                    fontSize =12.sp,
                                     lineHeight = 27.sp,
                                     fontFamily = FontFamily(Font(R.font.lexend_deca_light)),
                                     fontWeight = FontWeight(100),
@@ -329,6 +447,7 @@ fun CollapsedAppBar(
 @Composable
 fun AppBarHeader(
     modifier: Modifier = Modifier,
+    navController: NavController?,
     visible: Boolean
 ) {
     // animate fadeIn fadeOut the expanded app bar header
@@ -348,7 +467,7 @@ fun AppBarHeader(
                     .fillMaxWidth()
                     .padding(end = 30.dp)
                     .clickable (onClick = {
-                        //navController?.navigate(route = HomeMainAppScreens.ProfileMainScreen.name)
+                        navController?.navigate(route = HomeMainAppScreens.ProfileMainScreen.name)
 
                     }),
                 horizontalArrangement = Arrangement.Start
@@ -361,7 +480,7 @@ fun AppBarHeader(
                         .align(Alignment.Start),
                         text = "Hello, Omer",
                         style = TextStyle(
-                            fontSize = 13.sp,
+                            fontSize = 15.sp,
                             lineHeight = 27.sp,
                             fontFamily = FontFamily(Font(R.font.lexend_deca_semi_bold)),
                             fontWeight = FontWeight(600),
@@ -372,7 +491,7 @@ fun AppBarHeader(
                         .align(Alignment.Start),
                         text = "Find a Place to Vibe in London",
                         style = TextStyle(
-                            fontSize =10.sp,
+                            fontSize =12.sp,
                             lineHeight = 27.sp,
                             fontFamily = FontFamily(Font(R.font.lexend_deca_light)),
                             fontWeight = FontWeight(100),
@@ -386,7 +505,7 @@ fun AppBarHeader(
             Column(modifier = Modifier) {
                 ImageProductPager()
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }
@@ -472,7 +591,7 @@ fun SearchBar(hint  :String){
         modifier = Modifier
             .wrapContentWidth()
             .requiredHeight(48.dp)
-            .padding(16.dp, 0.dp, 16.dp, 0.dp),
+            .padding(1.dp, 0.dp, 1.dp, 0.dp),
         border = BorderStroke(1.dp, colorResource(R.color.divider)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
@@ -537,22 +656,19 @@ fun SearchBar(hint  :String){
 }
 
 @Composable
-fun MainFoodList(navController: NavController?,foodList: List<TourData> = getTourData()){
-    Column(modifier = Modifier.padding(12.dp)) {
-
-        LazyVerticalGrid(
-            modifier = Modifier
-                .wrapContentSize(),
-            columns = GridCells.Fixed(2),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            items(items = foodList){ foodList ->
-                MovieRow(foodList,navController){ selectedFoodItem ->
-                    Log.d("SelectedFoodItem",selectedFoodItem.name)
-                    navController?.navigate(route = HomeMainAppScreens.ProductDetailScreen.name+"/"+selectedFoodItem.id)
-                }
+fun MainFoodList(modifier: Modifier,navController: NavController?,foodList: List<TourData> = getTourData()){
+    LazyVerticalGrid(
+        modifier = modifier
+            .wrapContentSize(),
+        columns = GridCells.Fixed(2),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        items(items = foodList){ foodList ->
+            MovieRow(foodList,navController){ selectedFoodItem ->
+                Log.d("SelectedFoodItem",selectedFoodItem.name)
+                navController?.navigate(route = HomeMainAppScreens.ProductDetailScreen.name+"/"+selectedFoodItem.id)
             }
         }
     }
@@ -602,14 +718,14 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
     }
     Card(modifier = Modifier
         .padding(4.dp)
-        .width(170.dp),
+        .wrapContentSize(),
         onClick = {
             onItemClick(tourData)
         },
         shape = RoundedCornerShape(corner = CornerSize(16.dp)),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
         Surface(modifier = Modifier
-            .fillMaxSize()
+            .wrapContentSize()
             .align(Alignment.CenterHorizontally),
             color = Color.White,
         ) {
@@ -618,7 +734,7 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
                     .height(200.dp),
                     painter = painter!!,
                     contentDescription = "image description",
-                    contentScale = ContentScale.FillWidth)
+                    contentScale = ContentScale.FillBounds)
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -629,8 +745,9 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
                         .align(Alignment.CenterVertically)) {
                         Text(modifier = Modifier,
                             text = tourData.name,
+                            maxLines = 1,
                             style = TextStyle(
-                                fontSize = 20.sp,
+                                fontSize = 12.sp,
                                 lineHeight = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.lexend_deca_bold)),
                                 fontWeight = FontWeight.Bold,
@@ -654,7 +771,7 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
                         .padding(start = 6.dp),
                         text = tourData.rating.toString(),
                         style = TextStyle(
-                            fontSize = 14.sp,
+                            fontSize = 10.sp,
                             lineHeight = 20.sp,
                             fontFamily = FontFamily(Font(R.font.lexend_deca_medium)),
                             fontWeight = FontWeight(500),
@@ -680,10 +797,10 @@ fun MovieRow(tourData: TourData, navController: NavController?, onItemClick:(Tou
                             .padding(10.dp),
                             text = tourData.description,
                             style = TextStyle(
-                                fontSize = 14.sp,
+                                fontSize = 10.sp,
                                 lineHeight = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.lexend_deca_medium)),
-                                fontWeight = FontWeight(500),
+                                fontWeight = FontWeight(300),
                                 color = colorResource(R.color.black),
                             )
                         )

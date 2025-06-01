@@ -1,4 +1,4 @@
-#TouristVibe - Android App
+***TouristVibe - Android App***
 
 **Overview**
 
@@ -72,27 +72,12 @@ Sync the project with Gradle files
 
 Build and run the app
 
-Configuration
-Add your API keys (if any) in local.properties file:
+<img width="565" alt="Screenshot 2025-06-01 at 5 25 44 PM" src="https://github.com/user-attachments/assets/aa504307-a7e0-455f-bb7c-9bf7271e5b2b" />
 
-MAPS_API_KEY=your_api_key_here
-Folder Structure
-touristvibe/
-├── app/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/touristvibe/
-│   │   │   │   ├── data/            # Data layer (repositories, data sources)
-│   │   │   │   ├── di/              # Dependency injection modules
-│   │   │   │   ├── domain/          # Business logic and use cases
-│   │   │   │   ├── ui/              # Presentation layer (composables, view models)
-│   │   │   │   ├── utils/           # Utility classes and extensions
-│   │   │   │   └── TouristVibeApp.kt # Main application class
-│   │   │   └── res/                 # Resources (drawables, strings, etc.)
-│   │   └── test/                    # Unit tests
-├── build.gradle                     # Project level Gradle config
-└── settings.gradle                  # Project settings
-Dependencies
+
+
+**Dependencies**
+
 See app/build.gradle for the complete list of dependencies including:
 
 Jetpack Compose
@@ -115,8 +100,23 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 **License**
 [Specify your license here, e.g., MIT, Apache 2.0]
 
+**Video Intro**
+
+
+
+https://github.com/user-attachments/assets/9da78f0c-0ec4-4e49-a159-aba012b44a25
+
+
+
 **Screenshots**
-[Optionally, you can add screenshots of your app here]
+![login](https://github.com/user-attachments/assets/7219807e-e87f-4400-b1d7-42615a8d5e32)
+![country code](https://github.com/user-attachments/assets/725fc5ae-4f76-4a62-b382-58e3cf0e2077)
+![Sign Up](https://github.com/user-attachments/assets/8e4e3a27-86ab-4459-97b1-fc3fe1152aee)
+![homepage](https://github.com/user-attachments/assets/1d0403f0-0d33-4ed5-afe1-7b20bfc5eecb)
+![collapsed home](https://github.com/user-attachments/assets/639ca397-9e24-4b6e-b722-3248b917f7d4)
+![detail page ](https://github.com/user-attachments/assets/d3848b8f-bdf8-4ff1-9264-3defb0443dcb)
+![profile page ](https://github.com/user-attachments/assets/f2e5db6a-6855-4fd5-aac1-a732ace34f2c)
+
 
 
 **Contact**
